@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+    dev:
+        container_name: ${APP_NAME}_dev
+        image: ${APP_NAME}-dev:1.0.0
+        build:
+            context: .
+            target: development
+            dockerfile: ./Dockerfile
+        command: yarn start:debug
+        ports:
+            - 3232:3232
+            - 9339:9339
+        networks:
+            - nest-network
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        restart: unless-stopped
+            
+    mysql:
+        image: mysql:latest
+        container_name: ${APP_NAME}_mysql_dev
+        networks:
+        - nest-network
+        ports:
+        - "3306:3306"
+        volumes:
+        - /data/mysql:/var/lib/mysql
+        env_file:
+        - .env
+
+networks:
+  nest-network:
+    name: ${APP_NETWORK}
+    driver: bridge
