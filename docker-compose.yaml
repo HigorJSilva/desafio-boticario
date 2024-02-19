@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+    dev:
+        container_name: ${APP_NAME}_dev
+        image: ${APP_NAME}-dev:1.0.0
+        build:
+            context: .
+            target: development
+            dockerfile: ./Dockerfile
+        command: yarn start:debug
+        ports:
+            - 3232:3232
+            - 9339:9339
+        networks:
+            - nest-network
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        restart: unless-stopped
+        
+    postgres:
+        image: postgres:16.0-alpine3.18
+        container_name: ${APP_NAME}_postgres_dev
+        networks:
+        - nest-network
+        ports:
+        - 5422:5432
+        volumes:
+        - /data/postgres:/var/lib/postgresql/data/
+        env_file:
+        - .env
+ 
+    pgadmin:
+        image: dpage/pgadmin4:7.7
+        container_name: ${APP_NAME}_pgadmin_dev
+        networks:
+        - nest-network
+        ports:
+        - "4322:80"
+        volumes:
+        - /data/pgadmin:/root/.pgadmin
+        env_file:
+        - .env
+        depends_on:
+        - postgres
+
+networks:
+  nest-network:
+    name: ${APP_NETWORK}
+    driver: bridge
