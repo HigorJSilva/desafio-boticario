@@ -4,9 +4,30 @@ import { UpdateClientDto } from './dto/update-client.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import { Client } from './entities/client.entity';
+import {
+  FilterOperator,
+  NO_PAGINATION,
+  PaginateConfig,
+  PaginateQuery,
+  Paginated,
+  paginate,
+} from 'nestjs-paginate';
 
 @Injectable()
 export class ClientService {
+  public static paginateConfig: PaginateConfig<Client> = {
+    sortableColumns: ['clienteId', 'nome', 'cpf', 'email'],
+    defaultSortBy: [['clienteId', 'DESC']],
+    searchableColumns: ['clienteId', 'nome', 'cpf', 'telefone', 'email'],
+    maxLimit: NO_PAGINATION,
+    filterableColumns: {
+      clienteId: [FilterOperator.EQ],
+      nome: [FilterOperator.ILIKE],
+      cpf: [FilterOperator.ILIKE],
+      email: [FilterOperator.ILIKE],
+    },
+  };
+
   constructor(
     @InjectRepository(Client)
     private readonly clientRepository: Repository<Client>,
@@ -16,8 +37,12 @@ export class ClientService {
     return await this.clientRepository.save(createClientDto);
   }
 
-  findAll() {
-    return `This action returns all client`;
+  async findAll(query: PaginateQuery): Promise<Paginated<Client>> {
+    return await paginate(
+      query,
+      this.clientRepository,
+      ClientService.paginateConfig,
+    );
   }
 
   async findOne(id: number) {

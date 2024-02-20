@@ -27,6 +27,13 @@ import {
   IApiUnauthorizedResponse,
 } from 'src/shared/interfaces/swagger-schemas';
 import { CreateClientReturnDto } from './dto/create-client-return.dto';
+import {
+  ApiOkPaginatedResponse,
+  Paginate,
+  PaginateQuery,
+  Paginated,
+} from 'nestjs-paginate';
+import { Client } from './entities/client.entity';
 
 @Controller('client')
 @ApiTags('Client')
@@ -45,9 +52,14 @@ export class ClientController {
     return await this.clientService.create(createClientDto);
   }
 
+  @ApiOkPaginatedResponse(CreateClientReturnDto, ClientService.paginateConfig)
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.clientService.findAll();
+  async findAll(@Paginate() query: PaginateQuery): Promise<Paginated<Client>> {
+    query.filter = query.filter || {};
+    return await this.clientService.findAll(query);
   }
 
   @ApiOkResponse({
