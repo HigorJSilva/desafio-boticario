@@ -8,6 +8,16 @@ export const IApiUnauthorizedResponse = {
   },
 };
 
+export const IApiNotFoundResponse = (message: string) => ({
+  schema: {
+    example: {
+      message: message,
+      error: 'Not Found',
+      statusCode: 404,
+    },
+  },
+});
+
 export const UserProfileResponse = {
   description: 'Unauthorized Error',
   schema: {

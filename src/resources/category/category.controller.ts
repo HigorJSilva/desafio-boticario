@@ -14,13 +14,18 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Category } from './entities/category.entity';
 import { CreateCategoryReturnDto } from './dto/create-category-return.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { IApiUnauthorizedResponse } from 'src/shared/interfaces/swagger-schemas';
+import {
+  IApiNotFoundResponse,
+  IApiUnauthorizedResponse,
+} from 'src/shared/interfaces/swagger-schemas';
 
 @Controller('category')
 @ApiTags('Category')
@@ -45,6 +50,13 @@ export class CategoryController {
     return this.categoryService.findAll();
   }
 
+  @ApiOkResponse({
+    type: CreateCategoryReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.categoryService.findOne(+id);
