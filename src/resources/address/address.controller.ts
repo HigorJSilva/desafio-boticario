@@ -28,6 +28,12 @@ import {
 } from 'src/shared/interfaces/swagger-schemas';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateAddressReturnDto } from './dto/create-address-return.dto';
+import {
+  ApiOkPaginatedResponse,
+  Paginate,
+  PaginateQuery,
+  Paginated,
+} from 'nestjs-paginate';
 
 @Controller('address')
 @ApiTags('Address')
@@ -46,9 +52,14 @@ export class AddressController {
     return await this.addressService.create(createAddressDto);
   }
 
+  @ApiOkPaginatedResponse(CreateAddressReturnDto, AddressService.paginateConfig)
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.addressService.findAll();
+  async findAll(@Paginate() query: PaginateQuery): Promise<Paginated<Address>> {
+    query.filter = query.filter || {};
+    return await this.addressService.findAll(query);
   }
 
   @ApiOkResponse({
@@ -67,7 +78,7 @@ export class AddressController {
     type: CreateAddressReturnDto,
   })
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
-  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiNotFoundResponse(IApiNotFoundResponse('Address not found'))
   @ApiBearerAuth('JWT-auth')
   @ApiBadRequestResponse(IApiBadRequestResponse)
   @UseGuards(JwtAuthGuard)
@@ -81,7 +92,7 @@ export class AddressController {
 
   @ApiOkResponse()
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
-  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiNotFoundResponse(IApiNotFoundResponse('Address not found'))
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')

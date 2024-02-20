@@ -4,9 +4,30 @@ import { UpdateAddressDto } from './dto/update-address.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Address } from './entities/address.entity';
+import {
+  FilterOperator,
+  NO_PAGINATION,
+  PaginateConfig,
+  PaginateQuery,
+  Paginated,
+  paginate,
+} from 'nestjs-paginate';
 
 @Injectable()
 export class AddressService {
+  public static paginateConfig: PaginateConfig<Address> = {
+    sortableColumns: ['enderecoId', 'rua', 'cidade', 'cep'],
+    defaultSortBy: [['enderecoId', 'DESC']],
+    searchableColumns: ['enderecoId', 'rua', 'cidade', 'cep'],
+    maxLimit: NO_PAGINATION,
+    filterableColumns: {
+      enderecoId: [FilterOperator.EQ],
+      rua: [FilterOperator.ILIKE],
+      cidade: [FilterOperator.ILIKE],
+      cep: [FilterOperator.ILIKE],
+    },
+  };
+
   constructor(
     @InjectRepository(Address)
     private readonly addressRepository: Repository<Address>,
@@ -16,8 +37,12 @@ export class AddressService {
     return await this.addressRepository.save(createAddressDto);
   }
 
-  findAll() {
-    return `This action returns all address`;
+  async findAll(query: PaginateQuery): Promise<Paginated<Address>> {
+    return await paginate(
+      query,
+      this.addressRepository,
+      AddressService.paginateConfig,
+    );
   }
 
   async findOne(id: number): Promise<Address> {
