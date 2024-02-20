@@ -26,6 +26,12 @@ import {
   IApiNotFoundResponse,
   IApiUnauthorizedResponse,
 } from 'src/shared/interfaces/swagger-schemas';
+import {
+  ApiOkPaginatedResponse,
+  Paginate,
+  PaginateQuery,
+  Paginated,
+} from 'nestjs-paginate';
 
 @Controller('category')
 @ApiTags('Category')
@@ -45,9 +51,17 @@ export class CategoryController {
     return await this.categoryService.create(createCategoryDto);
   }
 
+  @ApiOkPaginatedResponse(
+    CreateCategoryReturnDto,
+    CategoryService.paginateConfig,
+  )
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  async findAll(
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<Category>> {
+    query.filter = query.filter || {};
+    return await this.categoryService.findAll(query);
   }
 
   @ApiOkResponse({

@@ -4,9 +4,29 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  FilterOperator,
+  NO_PAGINATION,
+  PaginateConfig,
+  PaginateQuery,
+  Paginated,
+  paginate,
+} from 'nestjs-paginate';
 
 @Injectable()
 export class CategoryService {
+  public static paginateConfig: PaginateConfig<Category> = {
+    sortableColumns: ['categoriaId', 'nomeCategoria', 'descricaoCategoria'],
+    defaultSortBy: [['categoriaId', 'DESC']],
+    searchableColumns: ['categoriaId', 'nomeCategoria', 'descricaoCategoria'],
+    maxLimit: NO_PAGINATION,
+    filterableColumns: {
+      categoriaId: [FilterOperator.EQ],
+      nomeCategoria: [FilterOperator.ILIKE],
+      descricaoCategoria: [FilterOperator.ILIKE],
+    },
+  };
+
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
@@ -16,8 +36,12 @@ export class CategoryService {
     return await this.categoryRepository.save(createCategoryDto);
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll(query: PaginateQuery): Promise<Paginated<Category>> {
+    return await paginate(
+      query,
+      this.categoryRepository,
+      CategoryService.paginateConfig,
+    );
   }
 
   async findOne(id: number): Promise<Category> {
