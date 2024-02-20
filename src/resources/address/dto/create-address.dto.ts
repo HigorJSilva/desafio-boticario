@@ -65,7 +65,7 @@ export class CreateAddressDto {
     required: false,
     maximum: 100,
     minimum: 1,
-    example: '1',
+    example: 'apt. 101',
   })
   @IsString()
   @Length(1, 100)
@@ -73,7 +73,7 @@ export class CreateAddressDto {
   complemento?: string;
 
   @ApiProperty({
-    description: 'Address complement',
+    description: 'City state',
     required: false,
     maximum: 2,
     minimum: 1,
