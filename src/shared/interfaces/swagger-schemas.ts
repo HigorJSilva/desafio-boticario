@@ -18,6 +18,20 @@ export const IApiNotFoundResponse = (message: string) => ({
   },
 });
 
+export const IApiBadRequestResponse = {
+  schema: {
+    example: {
+      message: [
+        {
+          property: ['error 1', 'error 2'],
+        },
+      ],
+      error: 'Bad Request',
+      statusCode: 400,
+    },
+  },
+};
+
 export const UserProfileResponse = {
   description: 'Unauthorized Error',
   schema: {
