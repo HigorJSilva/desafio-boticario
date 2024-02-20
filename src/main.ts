@@ -6,6 +6,7 @@ import {
 import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
 import { config } from './shared/config/swagger';
+import { ValidationPipe } from './shared/pipes/validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -14,7 +15,10 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('/api');
+  app.useGlobalPipes(new ValidationPipe());
+
   SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, config));
+
   await app.listen(3232, '::');
 }
 bootstrap();
