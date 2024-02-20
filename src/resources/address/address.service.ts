@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,8 +20,8 @@ export class AddressService {
     return `This action returns all address`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} address`;
+  async findOne(id: number): Promise<Address> {
+    return await this.getAddress({ enderecoId: id });
   }
 
   update(id: number, updateAddressDto: UpdateAddressDto) {
@@ -30,5 +30,15 @@ export class AddressService {
 
   remove(id: number) {
     return `This action removes a #${id} address`;
+  }
+
+  async getAddress(where: Partial<Address>): Promise<Address> {
+    const address = await this.addressRepository.findOneBy(where);
+
+    if (!address) {
+      throw new NotFoundException('Address not found');
+    }
+
+    return address;
   }
 }

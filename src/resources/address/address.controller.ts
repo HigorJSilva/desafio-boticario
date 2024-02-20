@@ -16,11 +16,14 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
   IApiBadRequestResponse,
+  IApiNotFoundResponse,
   IApiUnauthorizedResponse,
 } from 'src/shared/interfaces/swagger-schemas';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -48,9 +51,16 @@ export class AddressController {
     return this.addressService.findAll();
   }
 
+  @ApiOkResponse({
+    type: CreateAddressReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Address not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.addressService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<Address> {
+    return await this.addressService.findOne(+id);
   }
 
   @Patch(':id')
