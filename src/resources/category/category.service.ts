@@ -42,8 +42,17 @@ export class CategoryService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number): Promise<void> {
+    const category = await this.getCategory({ categoriaId: id }).catch(() => {
+      undefined;
+    });
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    await this.categoryRepository.delete({ categoriaId: category.categoriaId });
+    return;
   }
 
   async getCategory(where: Partial<Category>): Promise<Category> {
