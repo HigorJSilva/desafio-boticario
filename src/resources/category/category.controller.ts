@@ -62,6 +62,9 @@ export class CategoryController {
     return await this.categoryService.findOne(+id);
   }
 
+  @ApiOkResponse({
+    type: CreateCategoryReturnDto,
+  })
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
   @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
   @ApiBearerAuth('JWT-auth')
