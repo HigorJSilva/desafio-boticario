@@ -79,8 +79,13 @@ export class AddressController {
     return await this.addressService.update(+id, updateAddressDto);
   }
 
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.addressService.remove(+id);
+  async remove(@Param('id') id: string): Promise<void> {
+    return await this.addressService.remove(+id);
   }
 }

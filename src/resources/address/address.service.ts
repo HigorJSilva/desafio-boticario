@@ -39,8 +39,17 @@ export class AddressService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} address`;
+  async remove(id: number): Promise<void> {
+    const address = await this.getAddress({ enderecoId: id }).catch(() => {
+      undefined;
+    });
+
+    if (!address) {
+      throw new NotFoundException('Address not found');
+    }
+
+    await this.addressRepository.delete({ enderecoId: address.enderecoId });
+    return;
   }
 
   async getAddress(where: Partial<Address>): Promise<Address> {
