@@ -58,8 +58,8 @@ export class CategoryController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoryService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<Category> {
+    return await this.categoryService.findOne(+id);
   }
 
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
