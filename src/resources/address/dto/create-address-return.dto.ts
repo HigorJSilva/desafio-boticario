@@ -7,5 +7,5 @@ export class CreateAddressReturnDto extends CreateAddressDto {
     required: true,
     example: 1,
   })
-  categoriaId: number;
+  enderecoId: number;
 }
