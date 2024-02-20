@@ -24,8 +24,22 @@ export class CategoryService {
     return await this.getCategory({ categoriaId: id });
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
+    const category = await this.getCategory({ categoriaId: id }).catch(() => {
+      undefined;
+    });
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return await this.categoryRepository.save({
+      ...category,
+      ...updateCategoryDto,
+    });
   }
 
   remove(id: number) {

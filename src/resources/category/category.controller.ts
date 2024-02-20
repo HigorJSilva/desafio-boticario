@@ -62,12 +62,16 @@ export class CategoryController {
     return this.categoryService.findOne(+id);
   }
 
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
-    return this.categoryService.update(+id, updateCategoryDto);
+  ): Promise<Category> {
+    return await this.categoryService.update(+id, updateCategoryDto);
   }
 
   @Delete(':id')
