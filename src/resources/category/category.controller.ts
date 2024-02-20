@@ -56,6 +56,8 @@ export class CategoryController {
     CategoryService.paginateConfig,
   )
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(
     @Paginate() query: PaginateQuery,
