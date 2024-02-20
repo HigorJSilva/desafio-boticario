@@ -1,4 +1,5 @@
 import { Address } from 'src/resources/address/entities/address.entity';
+import { Order } from 'src/resources/order/entities/order.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,6 +7,7 @@ import {
   Unique,
   JoinColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 @Entity({ name: 'cliente' })
@@ -41,4 +43,7 @@ export class Client {
   @OneToOne(() => Address, (address) => address.client)
   @JoinColumn({ name: 'endereco_id', referencedColumnName: 'enderecoId' })
   endereco: Address;
+
+  @OneToMany(() => Order, (order) => order.client)
+  orders?: Order[];
 }
