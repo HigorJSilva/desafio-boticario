@@ -15,11 +15,14 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   IApiBadRequestResponse,
+  IApiNotFoundResponse,
   IApiUnauthorizedResponse,
 } from 'src/shared/interfaces/swagger-schemas';
 import { CreateClientReturnDto } from './dto/create-client-return.dto';
@@ -36,8 +39,8 @@ export class ClientController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createClientDto: CreateClientDto) {
-    return this.clientService.create(createClientDto);
+  async create(@Body() createClientDto: CreateClientDto) {
+    return await this.clientService.create(createClientDto);
   }
 
   @Get()
@@ -45,9 +48,16 @@ export class ClientController {
     return this.clientService.findAll();
   }
 
+  @ApiOkResponse({
+    type: CreateClientReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Client not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clientService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.clientService.findOne(+id);
   }
 
   @Patch(':id')
