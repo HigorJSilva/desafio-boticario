@@ -3,7 +3,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import { AddressModule } from './address/address.module';
+import { ClientModule } from './client/client.module';
 
-@Module({ imports: [AuthModule, CategoryModule, UsersModule, AddressModule] })
+@Module({ imports: [AuthModule, CategoryModule, UsersModule, AddressModule, ClientModule] })
 
 export class ResourcesModule {}
