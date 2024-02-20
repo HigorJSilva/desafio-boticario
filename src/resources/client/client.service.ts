@@ -48,8 +48,21 @@ export class ClientService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async remove(id: number): Promise<void> {
+    const client = await this.getClient({
+      where: {
+        clienteId: id,
+      },
+    }).catch(() => {
+      undefined;
+    });
+
+    if (!client) {
+      throw new NotFoundException('Client not found');
+    }
+
+    await this.clientRepository.delete({ clienteId: client.clienteId });
+    return;
   }
 
   async getClient(where: FindOneOptions<Client>): Promise<Client> {

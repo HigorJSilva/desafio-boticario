@@ -17,6 +17,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -28,6 +29,7 @@ import {
 import { CreateClientReturnDto } from './dto/create-client-return.dto';
 
 @Controller('client')
+@ApiTags('Client')
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
@@ -64,7 +66,7 @@ export class ClientController {
     type: CreateClientReturnDto,
   })
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
-  @ApiNotFoundResponse(IApiNotFoundResponse('Address not found'))
+  @ApiNotFoundResponse(IApiNotFoundResponse('Client not found'))
   @ApiBearerAuth('JWT-auth')
   @ApiBadRequestResponse(IApiBadRequestResponse)
   @UseGuards(JwtAuthGuard)
@@ -76,8 +78,13 @@ export class ClientController {
     return await this.clientService.update(+id, updateClientDto);
   }
 
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Client not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientService.remove(+id);
+  async remove(@Param('id') id: string): Promise<void> {
+    return await this.clientService.remove(+id);
   }
 }
