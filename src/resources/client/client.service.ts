@@ -29,8 +29,23 @@ export class ClientService {
     });
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async update(id: number, updateClientDto: UpdateClientDto): Promise<Client> {
+    const client = await this.getClient({
+      where: {
+        clienteId: id,
+      },
+    }).catch(() => {
+      undefined;
+    });
+
+    if (!client) {
+      throw new NotFoundException('Client not found');
+    }
+
+    return await this.clientRepository.save({
+      ...client,
+      ...updateClientDto,
+    });
   }
 
   remove(id: number) {

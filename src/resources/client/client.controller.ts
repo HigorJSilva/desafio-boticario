@@ -60,9 +60,20 @@ export class ClientController {
     return await this.clientService.findOne(+id);
   }
 
+  @ApiOkResponse({
+    type: CreateClientReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Address not found'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiBadRequestResponse(IApiBadRequestResponse)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-    return this.clientService.update(+id, updateClientDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateClientDto: UpdateClientDto,
+  ) {
+    return await this.clientService.update(+id, updateClientDto);
   }
 
   @Delete(':id')
