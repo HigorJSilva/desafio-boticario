@@ -63,9 +63,20 @@ export class AddressController {
     return await this.addressService.findOne(+id);
   }
 
+  @ApiOkResponse({
+    type: CreateAddressReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiBadRequestResponse(IApiBadRequestResponse)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAddressDto: UpdateAddressDto) {
-    return this.addressService.update(+id, updateAddressDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateAddressDto: UpdateAddressDto,
+  ) {
+    return await this.addressService.update(+id, updateAddressDto);
   }
 
   @Delete(':id')

@@ -24,8 +24,19 @@ export class AddressService {
     return await this.getAddress({ enderecoId: id });
   }
 
-  update(id: number, updateAddressDto: UpdateAddressDto) {
-    return `This action updates a #${id} address`;
+  async update(id: number, updateAddressDto: UpdateAddressDto) {
+    const address = await this.getAddress({ enderecoId: id }).catch(() => {
+      undefined;
+    });
+
+    if (!address) {
+      throw new NotFoundException('Address not found');
+    }
+
+    return await this.addressRepository.save({
+      ...address,
+      ...updateAddressDto,
+    });
   }
 
   remove(id: number) {
