@@ -12,6 +12,7 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -23,6 +24,7 @@ import { Category } from './entities/category.entity';
 import { CreateCategoryReturnDto } from './dto/create-category-return.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
+  IApiBadRequestResponse,
   IApiNotFoundResponse,
   IApiUnauthorizedResponse,
 } from 'src/shared/interfaces/swagger-schemas';
@@ -42,6 +44,7 @@ export class CategoryController {
     type: CreateCategoryReturnDto,
   })
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiBadRequestResponse(IApiBadRequestResponse)
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -84,6 +87,7 @@ export class CategoryController {
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
   @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
   @ApiBearerAuth('JWT-auth')
+  @ApiBadRequestResponse(IApiBadRequestResponse)
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
