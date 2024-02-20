@@ -6,7 +6,8 @@ import {
 import { AppModule } from './app.module';
 import { SwaggerModule } from '@nestjs/swagger';
 import { config } from './shared/config/swagger';
-import { ValidationPipe } from './shared/pipes/validation.pipe';
+import { ValidationError } from 'class-validator';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -15,7 +16,19 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('/api');
-  app.useGlobalPipes(new ValidationPipe());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        return new BadRequestException(
+          validationErrors.map((error) => ({
+            [error.property]: Object.values(error.constraints),
+          })),
+        );
+      },
+    }),
+  );
 
   SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, config));
 
