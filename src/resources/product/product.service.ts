@@ -4,9 +4,30 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { FindOneOptions, Repository } from 'typeorm';
+import {
+  FilterOperator,
+  NO_PAGINATION,
+  PaginateConfig,
+  PaginateQuery,
+  Paginated,
+  paginate,
+} from 'nestjs-paginate';
 
 @Injectable()
 export class ProductService {
+  public static paginateConfig: PaginateConfig<Product> = {
+    sortableColumns: ['produtoId', 'nomeProduto', 'precoProduto', 'qtdEstoque'],
+    defaultSortBy: [['produtoId', 'DESC']],
+    searchableColumns: ['produtoId', 'nomeProduto', 'precoProduto'],
+    relations: ['category'],
+    maxLimit: NO_PAGINATION,
+    filterableColumns: {
+      produtoId: [FilterOperator.EQ],
+      nomeProduto: [FilterOperator.ILIKE],
+      precoProduto: [FilterOperator.EQ],
+    },
+  };
+
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
@@ -16,8 +37,12 @@ export class ProductService {
     return await this.productRepository.save(createProductDto);
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll(query: PaginateQuery): Promise<Paginated<Product>> {
+    return await paginate(
+      query,
+      this.productRepository,
+      ProductService.paginateConfig,
+    );
   }
 
   async findOne(id: number): Promise<Product> {
@@ -41,10 +66,6 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
 
-    console.log('TURBO >> ProductService >> updateProductDto:', {
-      ...product,
-      ...updateProductDto,
-    });
     return await this.productRepository.save({
       ...product,
       ...updateProductDto,
