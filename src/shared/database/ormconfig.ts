@@ -13,7 +13,6 @@ export const databaseProviders = [
       database: configService.get('MYSQL_DATABASE'),
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: false,
-      logging: true,
     }),
   }),
 ];
