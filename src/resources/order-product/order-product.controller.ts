@@ -60,16 +60,29 @@ export class OrderProductController {
     return await this.orderProductService.findOne(+id);
   }
 
+  @ApiOkResponse({
+    type: CreateOrderProductReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('OrderProduct not found'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiBadRequestResponse(IApiBadRequestResponse)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateOrderProductDto: UpdateOrderProductDto,
   ) {
-    return this.orderProductService.update(+id, updateOrderProductDto);
+    return await this.orderProductService.update(+id, updateOrderProductDto);
   }
 
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('OrderProduct not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderProductService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.orderProductService.remove(+id);
   }
 }

@@ -31,12 +31,38 @@ export class OrderProductService {
     });
   }
 
-  update(id: number, updateOrderProductDto: UpdateOrderProductDto) {
-    return `This action updates a #${id} orderProduct`;
+  async update(id: number, updateOrderProductDto: UpdateOrderProductDto) {
+    const orderProduct = await this.getOrderProduct({
+      where: { produtoPedidoId: id },
+    }).catch(() => {
+      undefined;
+    });
+
+    if (!orderProduct) {
+      throw new NotFoundException('OrderProduct not found');
+    }
+
+    return await this.orderProductRepository.save({
+      ...orderProduct,
+      ...updateOrderProductDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} orderProduct`;
+  async remove(id: number): Promise<void> {
+    const orderProduct = await this.getOrderProduct({
+      where: { produtoPedidoId: id },
+    }).catch(() => {
+      undefined;
+    });
+
+    if (!orderProduct) {
+      throw new NotFoundException('OrderProduct not found');
+    }
+
+    await this.orderProductRepository.delete({
+      produtoPedidoId: orderProduct.produtoPedidoId,
+    });
+    return;
   }
 
   async getOrderProduct(
