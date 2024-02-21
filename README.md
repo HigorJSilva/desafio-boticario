@@ -24,7 +24,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Nest](https://github.com/nestjs/nest) API using fastify and MySQL
 
 ## Installation
 
@@ -33,6 +33,10 @@ $ yarn install
 ```
 
 ## Running the app
+
+Copy the .env.example file to .env file. You may change to match your enviroment.
+
+This project uses docker-compose to run locally, you may change the command to one of the following, you may also run them directly in terminal
 
 ```bash
 # development
@@ -45,19 +49,17 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## Test
+## API Documentation
+
+You can take a look at the api routes at
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+/api
 ```
-
+if you prefer the json to import to your api client
+```bash
+/api-json
+```
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
