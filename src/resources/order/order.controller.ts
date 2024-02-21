@@ -62,9 +62,20 @@ export class OrderController {
     return await this.orderService.findOne(+id);
   }
 
+  @ApiOkResponse({
+    type: CreateOrderReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Order not found'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiBadRequestResponse(IApiBadRequestResponse)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    return await this.orderService.update(+id, updateOrderDto);
   }
 
   @Delete(':id')

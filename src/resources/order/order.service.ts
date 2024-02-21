@@ -23,8 +23,19 @@ export class OrderService {
     return await this.getOrder({ pedidoId: id });
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Order> {
+    const order = await this.getOrder({ pedidoId: id }).catch(() => {
+      undefined;
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return await this.orderRepository.save({
+      ...order,
+      ...updateOrderDto,
+    });
   }
 
   remove(id: number) {
