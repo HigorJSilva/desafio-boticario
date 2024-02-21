@@ -27,6 +27,13 @@ import {
   IApiUnauthorizedResponse,
 } from 'src/shared/interfaces/swagger-schemas';
 import { CreateOrderProductReturnDto } from './dto/create-order-product-return.dto';
+import { OrderProduct } from './entities/order-product.entity';
+import {
+  ApiOkPaginatedResponse,
+  Paginate,
+  PaginateQuery,
+  Paginated,
+} from 'nestjs-paginate';
 
 @Controller('order-product')
 @ApiTags('OrderProduct')
@@ -43,9 +50,19 @@ export class OrderProductController {
     return await this.orderProductService.create(createOrderProductDto);
   }
 
+  @ApiOkPaginatedResponse(
+    CreateOrderProductReturnDto,
+    OrderProductService.paginateConfig,
+  )
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.orderProductService.findAll();
+  async findAll(
+    @Paginate() query: PaginateQuery,
+  ): Promise<Paginated<OrderProduct>> {
+    query.filter = query.filter || {};
+    return await this.orderProductService.findAll(query);
   }
 
   @ApiOkResponse({

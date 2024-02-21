@@ -4,9 +4,38 @@ import { UpdateOrderProductDto } from './dto/update-order-product.dto';
 import { OrderProduct } from './entities/order-product.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  FilterOperator,
+  NO_PAGINATION,
+  PaginateConfig,
+  PaginateQuery,
+  Paginated,
+  paginate,
+} from 'nestjs-paginate';
 
 @Injectable()
 export class OrderProductService {
+  public static paginateConfig: PaginateConfig<OrderProduct> = {
+    sortableColumns: [
+      'produtoPedidoId',
+      'product.nomeProduto',
+      'order.numeroPedido',
+    ],
+    searchableColumns: [
+      'produtoPedidoId',
+      'product.nomeProduto',
+      'order.numeroPedido',
+    ],
+    relations: ['product', 'order'],
+    defaultSortBy: [['produtoPedidoId', 'DESC']],
+    maxLimit: NO_PAGINATION,
+    filterableColumns: {
+      produtoPedidoId: [FilterOperator.EQ],
+      'product.nomeProduto': [FilterOperator.ILIKE],
+      'order.numeroPedido': [FilterOperator.ILIKE],
+    },
+  };
+
   constructor(
     @InjectRepository(OrderProduct)
     private readonly orderProductRepository: Repository<OrderProduct>,
@@ -18,8 +47,12 @@ export class OrderProductService {
     return await this.orderProductRepository.save(createOrderProductDto);
   }
 
-  findAll() {
-    return `This action returns all orderProduct`;
+  async findAll(query: PaginateQuery): Promise<Paginated<OrderProduct>> {
+    return await paginate(
+      query,
+      this.orderProductRepository,
+      OrderProductService.paginateConfig,
+    );
   }
 
   async findOne(id: number) {
