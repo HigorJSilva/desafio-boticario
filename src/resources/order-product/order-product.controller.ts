@@ -12,6 +12,8 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -21,6 +23,7 @@ import { UpdateOrderProductDto } from './dto/update-order-product.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   IApiBadRequestResponse,
+  IApiNotFoundResponse,
   IApiUnauthorizedResponse,
 } from 'src/shared/interfaces/swagger-schemas';
 import { CreateOrderProductReturnDto } from './dto/create-order-product-return.dto';
@@ -45,9 +48,16 @@ export class OrderProductController {
     return this.orderProductService.findAll();
   }
 
+  @ApiOkResponse({
+    type: CreateOrderProductReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('OrderProduct not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderProductService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.orderProductService.findOne(+id);
   }
 
   @Patch(':id')

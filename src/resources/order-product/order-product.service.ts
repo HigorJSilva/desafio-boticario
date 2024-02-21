@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderProductDto } from './dto/create-order-product.dto';
 import { UpdateOrderProductDto } from './dto/update-order-product.dto';
 import { OrderProduct } from './entities/order-product.entity';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -22,8 +22,13 @@ export class OrderProductService {
     return `This action returns all orderProduct`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} orderProduct`;
+  async findOne(id: number) {
+    return await this.getOrderProduct({
+      where: {
+        produtoPedidoId: id,
+      },
+      relations: { product: true, order: true },
+    });
   }
 
   update(id: number, updateOrderProductDto: UpdateOrderProductDto) {
@@ -32,5 +37,17 @@ export class OrderProductService {
 
   remove(id: number) {
     return `This action removes a #${id} orderProduct`;
+  }
+
+  async getOrderProduct(
+    where: FindOneOptions<OrderProduct>,
+  ): Promise<OrderProduct> {
+    const orderProduct = await this.orderProductRepository.findOne(where);
+
+    if (!orderProduct) {
+      throw new NotFoundException('OrderProduct not found');
+    }
+
+    return orderProduct;
   }
 }
