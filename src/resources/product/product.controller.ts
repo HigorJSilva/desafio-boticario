@@ -62,9 +62,18 @@ export class ProductController {
     return this.productService.findOne(+id);
   }
 
+  @ApiOkResponse({ type: CreateProductReturnDto })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiBadRequestResponse(IApiBadRequestResponse)
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    return await this.productService.update(+id, updateProductDto);
   }
 
   @Delete(':id')

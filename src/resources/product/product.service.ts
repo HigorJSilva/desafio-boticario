@@ -27,8 +27,28 @@ export class ProductService {
     });
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
+    const product = await this.getProduct({
+      where: { produtoId: id },
+    }).catch(() => {
+      undefined;
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    console.log('TURBO >> ProductService >> updateProductDto:', {
+      ...product,
+      ...updateProductDto,
+    });
+    return await this.productRepository.save({
+      ...product,
+      ...updateProductDto,
+    });
   }
 
   remove(id: number) {
