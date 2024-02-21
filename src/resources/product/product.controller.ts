@@ -15,11 +15,14 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
   IApiBadRequestResponse,
+  IApiNotFoundResponse,
   IApiUnauthorizedResponse,
 } from 'src/shared/interfaces/swagger-schemas';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -47,6 +50,13 @@ export class ProductController {
     return this.productService.findAll();
   }
 
+  @ApiOkResponse({
+    type: CreateProductReturnDto,
+  })
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
