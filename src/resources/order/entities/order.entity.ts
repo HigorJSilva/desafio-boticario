@@ -4,8 +4,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Client } from 'src/resources/client/entities/client.entity';
+import { OrderProduct } from 'src/resources/order-product/entities/order-product.entity';
 
 @Entity({ name: 'pedido' })
 export class Order {
@@ -34,4 +36,7 @@ export class Order {
   @ManyToOne(() => Client, (client) => client.orders)
   @JoinColumn({ name: 'cliente_id' })
   client: Client;
+
+  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.order)
+  orderProducts?: OrderProduct[];
 }
