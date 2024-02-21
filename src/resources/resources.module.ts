@@ -6,6 +6,7 @@ import { AddressModule } from './address/address.module';
 import { ClientModule } from './client/client.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
+import { OrderProductModule } from './order-product/order-product.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProductModule } from './product/product.module';
     ClientModule,
     OrderModule,
     ProductModule,
+    OrderProductModule,
   ],
 })
 export class ResourcesModule {}
