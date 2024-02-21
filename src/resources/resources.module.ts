@@ -7,6 +7,15 @@ import { ClientModule } from './client/client.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
 
-@Module({ imports: [AuthModule, CategoryModule, UsersModule, AddressModule, ClientModule, OrderModule, ProductModule] })
-
+@Module({
+  imports: [
+    AuthModule,
+    CategoryModule,
+    UsersModule,
+    AddressModule,
+    ClientModule,
+    OrderModule,
+    ProductModule,
+  ],
+})
 export class ResourcesModule {}
