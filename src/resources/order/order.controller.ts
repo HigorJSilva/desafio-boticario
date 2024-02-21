@@ -78,8 +78,13 @@ export class OrderController {
     return await this.orderService.update(+id, updateOrderDto);
   }
 
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.orderService.remove(+id);
   }
 }

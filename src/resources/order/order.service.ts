@@ -38,8 +38,17 @@ export class OrderService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async remove(id: number): Promise<void> {
+    const order = await this.getOrder({ pedidoId: id }).catch(() => {
+      undefined;
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    await this.orderRepository.delete({ pedidoId: order.pedidoId });
+    return;
   }
 
   async getOrder(where: Partial<Order>): Promise<Order> {
