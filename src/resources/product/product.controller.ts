@@ -54,7 +54,7 @@ export class ProductController {
     type: CreateProductReturnDto,
   })
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
-  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiNotFoundResponse(IApiNotFoundResponse('Product not found'))
   @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @Get(':id')
@@ -64,7 +64,7 @@ export class ProductController {
 
   @ApiOkResponse({ type: CreateProductReturnDto })
   @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
-  @ApiNotFoundResponse(IApiNotFoundResponse('Category not found'))
+  @ApiNotFoundResponse(IApiNotFoundResponse('Product not found'))
   @ApiBearerAuth('JWT-auth')
   @ApiBadRequestResponse(IApiBadRequestResponse)
   @UseGuards(JwtAuthGuard)
@@ -76,8 +76,13 @@ export class ProductController {
     return await this.productService.update(+id, updateProductDto);
   }
 
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse(IApiUnauthorizedResponse)
+  @ApiNotFoundResponse(IApiNotFoundResponse('Product not found'))
+  @ApiBearerAuth('JWT-auth')
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.productService.remove(+id);
   }
 }
