@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,9 @@ import {
   Paginated,
   paginate,
 } from 'nestjs-paginate';
+import { IHashProvider } from 'src/shared/interfaces/hash.provider';
+import BcryptAdapter from 'src/shared/providers/hash/bcrypt';
+import { ProtectedClient } from './interfaces/protected-client';
 
 @Injectable()
 export class ClientService {
@@ -31,10 +34,20 @@ export class ClientService {
   constructor(
     @InjectRepository(Client)
     private readonly clientRepository: Repository<Client>,
+    @Inject(BcryptAdapter)
+    private readonly hash: IHashProvider,
   ) {}
 
-  async create(createClientDto: CreateClientDto) {
-    return await this.clientRepository.save(createClientDto);
+  async create(createClientDto: CreateClientDto): Promise<ProtectedClient> {
+    if (createClientDto.senha) {
+      createClientDto.senha = await this.hash.generate(createClientDto.senha);
+    }
+
+    const client = await this.clientRepository.save(createClientDto);
+
+    const { senha, ...protectedClient } = client;
+
+    return protectedClient;
   }
 
   async findAll(query: PaginateQuery): Promise<Paginated<Client>> {
@@ -54,7 +67,10 @@ export class ClientService {
     });
   }
 
-  async update(id: number, updateClientDto: UpdateClientDto): Promise<Client> {
+  async update(
+    id: number,
+    updateClientDto: UpdateClientDto,
+  ): Promise<ProtectedClient> {
     const client = await this.getClient({
       where: {
         clienteId: id,
@@ -67,10 +83,18 @@ export class ClientService {
       throw new NotFoundException('Client not found');
     }
 
-    return await this.clientRepository.save({
+    if (updateClientDto.senha) {
+      updateClientDto.senha = await this.hash.generate(updateClientDto.senha);
+    }
+
+    const updatedClient = await this.clientRepository.save({
       ...client,
       ...updateClientDto,
     });
+
+    const { senha, ...protectedClient } = updatedClient;
+
+    return protectedClient;
   }
 
   async remove(id: number): Promise<void> {
